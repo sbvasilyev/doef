@@ -1,0 +1,9 @@
+* Материалы по курсу ДОЭФ
+** python
+
+Конспект находится в файле [[python_version.org]]
+
+Исходный код находится в трех файлах:
+- введение в python: [[file:python/intro.py][intro.py]]
+- вариационное исчисление: [[file:python/cov.py][cov.py]]
+- оптимальное управление: [[file:python/oc.py][oc.py]]

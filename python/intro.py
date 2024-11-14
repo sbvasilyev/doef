@@ -102,3 +102,56 @@ match read_input:
         print("running...")
     case cmd:
         print(f"you entered: {cmd}")
+
+x = 10
+
+while x > 0:
+    print(f"cube of {x} is {x ** 3}")
+    x -= 1
+
+some_strings = ["foo", "bar", "baz"]
+for s in some_strings:
+    print(s)
+
+xs = [0, -2, 3, 4, -1, 6, -12, -2, 5]
+
+# напишем цикл, зануляющий отрицательные числа
+for elem, idx in enumerate(xs):
+    if elem < 0:
+        xs[idx] = 0
+
+for num in range(100):
+    if num > 12:
+        print("We are not interested in numbers greater than 12")
+        break
+    
+    if num % 2 == 0:
+        print(f"Found an even number {num}")
+        continue
+
+    print(f"Found an odd number {num}")
+
+def abs(x):
+    return x if x >= 0 else -x
+
+def abs(x: int) -> int:
+    return x if x >= 0 else -x
+
+# модуль может быть как от целого, так и с плавающей точкой
+# поэтому правильнее будет так
+def abs(x: int | float) -> int | float:
+    return x if x >= 0 else -x
+
+from functools import reduce
+
+square_function = lambda x: x ** 3
+
+sum_of_squares = reduce(
+    lambda acc, el: acc + el,         # суммируем накопленное и элемент
+    map(lambda x: x ** 2, range(11)), # возводим в квадрат числа от 0 до 10
+    0                                 # начальное значение накопленного
+)
+# более идиоматический для python способ найти сумму квадратов
+# sum_of_squares = sum([x ** 2 for x in range(11)])
+
+print(f"sum of squares from 1 to 10 is {sum_of_squares}")

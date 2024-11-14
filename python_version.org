@@ -200,6 +200,107 @@ x = y = z = 5
 
 Можем обратить внимание, что вызов методов не меняет исходную строку, а возвращает результат как новую, что позволяет выстраивать "цепочки" вызовов методов, как в ~s.strip().upper()~. В самом деле, строки в python, как в большинстве языков иммутабельны (неизменяемы).
 
+** Управляющие конструкции
+*** Ветвление
+
+Конструкция ветвления ~if~ в python выглядит стандартно, но вокруг условия круглые скобки не требуются
+#+begin_src python :tangle "python/intro.py"
+  mark = 6.3
+
+  if mark < 4:
+      print("неудовлетворительно")
+  elif mark < 6:
+      print("удовлетворительно")
+  elif mark < 8:
+      print("хорошо")
+  else:
+      print("отлично")
+#+end_src
+
+Обращаю внимание, что ~if~ в примере сверху это /statement/, а не /expression/, то есть не возвращает никакого значения, чего иногда хотелось бы. Но ~if~ как выражение в языке тоже присутствует. Ниже пример, как его использовать для защиты от деления на ноль: 
+#+begin_src python :tangle "python/intro.py"
+  n_groups = 3
+  total_amount = 9000
+
+  amount_per_group = total_amount / n_groups if n_groups > 0 else total_amount
+#+end_src
+
+Конструкция ~switch~, присутствующая в подовляющем большинстве C-подобных языков, здесь отсутствует, но (начиная с версии 3.10) доступен оператор ~match~, который не только покрывает весь функционал ~switch~, но и позволяет производить структурный pattern matching. Для интересующихся немного об этом в соотвествующем подразделе со звездочкой, а ниже пример использования в роли ~switch~:
+#+begin_src python :tangle "python/intro.py"
+  read_input = "q"
+
+  match read_input:
+      case "q" | "quit":
+          print("quiting...")
+      case "r" | "run":
+          print("running...")
+      case cmd:
+          print(f"you entered: {cmd}")
+#+end_src
+
+*** Циклы
+
+*** Structural pattern matching (*)
+
+По-русски существует термин /сопоставление с образцом/, но вживую я его не слышал ни разу, поэтому будем использовать только английский вариант. В python пришло это из функциональных языков программирования. Мэтчить можно списки,  реализуем функцию ~map~ (которая применяет переданную функцию к каждому элементу списка и возвращает новый список):
+#+begin_src python
+  def my_map(func, xs):
+      match xs:
+          case []:
+              return []
+          case [x, *xs]:
+              return [func(x)] + my_map(func, xs)
+
+  print(my_map(lambda x: x ** 2, [0, 1, 2, 3, 4, 5]))
+#+end_src
+
+Можно мэтчить словари (по их отдельным полям), например:
+#+begin_src python
+  student = {
+      "programme": "Economics",
+      "grade": "B",
+      "name": "Ivan Petrov"
+  }
+
+  match student:
+      case {"grade": "A", "name": name}:
+          print(f"Student {name} passed exam")
+      case {"grade": "B" | "C", "programme": "Economics", "name": name}:
+          print(f"Student {name} passed exam (B and C allowed for Economics)")
+      case {"name": name}:
+          print(f"Student {name} did not pass exam")
+#+end_src
+
+Обращаю внимание, что не требуется, чтобы ветви покрывали все возможные случаи (как в обоих случая выше), так как ~match~ это /statement/ и ничего не возвращает, что является существенным отличием от паттерн мэтчинга в функциональных языках. Если нужно обработать случай "все прочее", и не важно что именно прочее, используем конструкцию ~case _:~. Например:
+#+begin_src python
+  response = {
+      "status": 200,
+      "body": "Hello, World"
+  }
+
+  match response:
+      case {"status": 200, "body": body}:
+          print(f"Got response: {body}")
+      case _:
+          print("Request failed")
+#+end_src
+
+И кортежи тоже можно (заодно это пример, где ветви не покрывают все возможные случаи):
+#+begin_src python
+  def connect_to_database():
+      # do some work
+      return ("ok", connection)
+
+  active_connection = None
+  match connect_to_database():
+      case ("ok", conn):
+          active_connection = conn
+#+end_src
+
+Более подробно можно прочесть в [[https://peps.python.org/pep-0636/][PEP-636]].
+
+** Функции
+
 ** Коллекции
 
 *** Списки
@@ -207,10 +308,6 @@ x = y = z = 5
 *** Кортежи
 
 *** Множества и словари
-
-** Управляющие конструкции
-
-** Функции
 
 * Вариационное исчисление
 

@@ -76,3 +76,29 @@ s = "ANOTHER STRING"
 print(s.lower())               # => "another string"
 print(s.replace("ING", "ONG")) # => "ANOTHER STRONG"
 print(s.split(" "))            # => ["ANOTHER", "STRING"]
+
+mark = 6.3
+
+if mark < 4:
+    print("неудовлетворительно")
+elif mark < 6:
+    print("удовлетворительно")
+elif mark < 8:
+    print("хорошо")
+else:
+    print("отлично")
+
+n_groups = 3
+total_amount = 9000
+
+amount_per_group = total_amount / n_groups if n_groups > 0 else total_amount
+
+read_input = "q"
+
+match read_input:
+    case "q" | "quit":
+        print("quiting...")
+    case "r" | "run":
+        print("running...")
+    case cmd:
+        print(f"you entered: {cmd}")

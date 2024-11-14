@@ -120,6 +120,8 @@ for elem, idx in enumerate(xs):
     if elem < 0:
         xs[idx] = 0
 
+print(f"non-negative xs is {xs}")
+
 for num in range(100):
     if num > 12:
         print("We are not interested in numbers greater than 12")

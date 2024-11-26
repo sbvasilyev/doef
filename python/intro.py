@@ -157,3 +157,46 @@ sum_of_squares = reduce(
 # sum_of_squares = sum([x ** 2 for x in range(11)])
 
 print(f"sum of squares from 1 to 10 is {sum_of_squares}")
+
+xs = [1, 3, "foo", "bar", False, [3, 4, 5]]
+empty_list = []
+
+print(xs[0])    # => 1
+print(xs[-1])   # => [3, 4, 5]
+print(xs[1:3])  # => [3, "foo"]
+print(xs[:2])   # => [1, 3]
+
+numbers = [1, 2, 3, 4, 5, 6]
+squared_numbers = [x ** 2 for x in numbers]
+print(squared_numbers)  # => [1, 4, 9, 16, 25, 36]
+
+squared_even_numbers = [x ** 2 for x in numbers if x % 2 == 0]
+print(squared_even_numbers)  # => [4, 16, 36]
+
+drinks = {"beer", "cola", "limonade"}
+drinks.add("beer")
+drinks.add("juice")
+print(drinks)   # => {"beer", "cola", "limonade"}
+
+print("cola" in drinks)   # => True
+print("coffee" in drinks) # => False
+
+student = {
+    "name": "Ivan",
+    "surname": "Ivanov",
+    "age": 21,
+    "grades": {
+        "calculus": 67,
+        "algebra": 58
+    }
+}
+
+print(student["name"])  # => Ivan
+print(student["grades"]["algebra"]) # => 58
+
+# student["height"]  => KeyError: 'height'
+print(student.get("height"))         # => None
+print(student.get("height", -1))    # => -1
+
+student["height"] = 178
+student["name"] = "Alexander"

@@ -378,9 +378,86 @@ x = y = z = 5
 ** Коллекции
 *** Списки
 
+Список можно задать перечислением элементов, пустой список - ~[]~:
+#+begin_src python :tangle "python/intro.py"
+  xs = [1, 3, "foo", "bar", False, [3, 4, 5]]
+  empty_list = []
+#+end_src
+
+На примере выше видно, что список может содержать элементы разных типов. В список можно добавлять элементы методом ~append~, который изменяет исходный список. Также доступно индексирование, включая индексирование с конца с помощью отрицательных индексов, и взятие подсписка:
+#+begin_src python :tangle "python/intro.py"
+  print(xs[0])    # => 1
+  print(xs[-1])   # => [3, 4, 5]
+  print(xs[1:3])  # => [3, "foo"]
+  print(xs[:2])   # => [1, 3]
+#+end_src
+
+*** List comprehension
+
+На русском нет используемого перевода. Конструкция, позволяющая создавать списки на основе списков, применяя к элементам исходного списка функцию (функция обычно задается по месту):
+#+begin_src python :tangle "python/intro.py"
+  numbers = [1, 2, 3, 4, 5, 6]
+  squared_numbers = [x ** 2 for x in numbers]
+  print(squared_numbers)  # => [1, 4, 9, 16, 25, 36]
+#+end_src
+
+Также есть возможность фильтровать элементы исходного списка:
+#+begin_src python :tangle "python/intro.py"
+  squared_even_numbers = [x ** 2 for x in numbers if x % 2 == 0]
+  print(squared_even_numbers)  # => [4, 16, 36]
+#+end_src
+
+Аналогичные конструкции доступны для словарей и множеств (о них ниже), но нам они не потребуются. Для интересующихся:
+#+begin_src python
+  # Для словарей
+  squares_cache = {x:(x ** 2) for x in range 10}
+  print(squares_cache)   # => {1: 1, 2: 4, 3: 9, 4: 16, ...}
+
+  # Для множеств
+  unique_squares = {x ** 2 for x in [1, 2, 2, 1, 3, 3, 2, 1]}
+  print(unique_squares)  # => {1, 4, 9}
+#+end_src
+
 *** Кортежи
 
 *** Множества и словари
+
+Множество (set) это коллекция, которая не может содержать дубликаты:
+#+begin_src python :tangle "python/intro.py"
+  drinks = {"beer", "cola", "limonade"}
+  drinks.add("beer")
+  drinks.add("juice")
+  print(drinks)   # => {"beer", "cola", "limonade"}
+#+end_src
+
+Основное преимущество множеств - это дешевая (за \(O(1)\), так как они релизованы с помощью hashtable, против \(O(n)\) у списка) проверка принадлежности элемента множеству:
+#+begin_src python :tangle "python/intro.py"
+  print("cola" in drinks)   # => True
+  print("coffee" in drinks) # => False      
+#+end_src
+
+Словари (dictionary) это пары ключ-значение (в других языках встречаются термины map, hashmap, associative array, что про одно и то же, хотя почти везде нюансы с имплементациями):
+#+begin_src python :tangle "python/intro.py"
+  student = {
+      "name": "Ivan",
+      "surname": "Ivanov",
+      "age": 21,
+      "grades": {
+          "calculus": 67,
+          "algebra": 58
+      }
+  }
+
+  print(student["name"])  # => Ivan
+  print(student["grades"]["algebra"]) # => 58
+
+  # student["height"]  => KeyError: 'height'
+  print(student.get("height"))         # => None
+  print(student.get("height", -1))    # => -1
+
+  student["height"] = 178
+  student["name"] = "Alexander"
+#+end_src
 
 * Вариационное исчисление
 ** Задача 1
@@ -592,7 +669,6 @@ x = y = z = 5
 [[./img/cov-5.png]]
 
 * Оптимальное управление
-
 ** Задача 1
 
 Численно решить задачу оптимального управления:

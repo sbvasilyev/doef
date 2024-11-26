@@ -16,7 +16,7 @@ z = m.Var(value=5)
 u = m.Var(value=0,lb=-1,ub=1)
 t = m.Var(value=0)
 # Отмечаем последнюю точку временной шкалы
-p = np.zeros(nt) 
+p = np.zeros(nt)
 p[-1] = 1.0
 final = m.Param(value=p)
 
@@ -140,7 +140,7 @@ p = np.zeros(nt)
 p[-1] = 1.0
 final = m.Param(value=p)
 
-# FV = fixed value, то есть одинаковое для любтого момента времени
+# FV = fixed value, то есть одинаковое для любого момента времени
 T = m.FV(value=1.0, lb=0.1, ub=100.0)
 # STATUS = 1 => участвует в оптимизации
 T.STATUS = 1
@@ -163,6 +163,8 @@ m.solve(disp=False)
 
 print('Найденное T: ' + str(T.value[0]))
 
+# масштабируем исходную шкалу от 0 до 1
+# можно брать любой элемент, они одинаковые
 tm = tm * T.value[0]
 
 plt.figure(1)
@@ -174,3 +176,4 @@ plt.legend(loc='best')
 plt.xlabel('Time')
 plt.ylabel('Value')
 plt.savefig("./img/oc-4.png")
+plt.clf()

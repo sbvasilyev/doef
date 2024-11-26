@@ -592,3 +592,260 @@ x = y = z = 5
 [[./img/cov-5.png]]
 
 * Оптимальное управление
+
+** Задача 1
+
+Численно решить задачу оптимального управления:
+\[ \int_0^2 \frac{1}{2} y^2 + y^2 \cdot t^2 dt \]
+\[ y' = u, \, y(0) = 1, \, u \in [-1, 1] \]
+
+*** Решение
+
+Подключаем необходимые библиотеки:
+#+begin_src python :tangle "python/oc.py"
+  from gekko import GEKKO
+  import numpy as np
+  import matplotlib.pyplot as plt
+  import os
+#+end_src
+
+Формулируем задачу:
+#+begin_src python :tangle "python/oc.py"
+  # Задача 1
+
+  # Инициализируем модель
+  m = GEKKO(remote=False)
+  nt = 101
+  m.time = np.linspace(0,2,nt)
+
+  # Задаём переменные
+  y = m.Var(value=1)
+  z = m.Var(value=5)
+  u = m.Var(value=0,lb=-1,ub=1)
+  t = m.Var(value=0)
+  # Отмечаем последнюю точку временной шкалы
+  p = np.zeros(nt)
+  p[-1] = 1.0
+  final = m.Param(value=p)
+
+
+  # Задаём уравнения
+  m.Equation(y.dt() == u)
+  m.Equation(t.dt() == 1)
+  m.Equation(z.dt() == 0.5 * y ** 2 + y**2 * t**2)
+#+end_src
+
+Задаем целевой функционал и запускаем оптимизатор:
+#+begin_src python :tangle "python/oc.py"
+  m.Obj(z * final)    # Целевая функция
+  m.options.IMODE = 6 # Задача оптимального управления/динамического программирования
+  m.solve()
+#+end_src
+
+Рисуем получившееся решение (и состояние, и управление):
+#+begin_src python :tangle "python/oc.py"
+  plt.plot(m.time[1:], y.value[1:], 'k-', label=r'$y$')
+  plt.plot(m.time[1:],u.value[1:],'r--',label=r'$u$')
+  plt.legend(loc='best')
+  plt.xlabel('Time')
+  plt.ylabel('Value')
+  plt.savefig("./img/oc-1.png")
+  plt.clf()
+#+end_src
+
+Получили следущее решение:
+
+[[./img/oc-1.png]]
+** Задача 2
+
+Численно решить задачу оптимального управления:
+\[ \int_0^2 -y + \frac{1}{2} u^2 + u  dt \]
+\[ y' = y + u, \, y(0) = 2, \, u \in \mathbb{R} \]
+
+*** Решение
+
+Аналогично предыдущей задаче:
+#+begin_src python :tangle "python/oc.py"
+  # Задача 2
+
+  m = GEKKO(remote = False)
+  nt = 301
+  m.time = np.linspace(0,2,nt)
+
+  y = m.Var(value=2)
+  z = m.Var(value=0)
+  u = m.Var(value=0)
+  p = np.zeros(nt)
+  p[-1] = 1.0
+  final = m.Param(value=p)
+
+
+  m.Equation(y.dt()==y + u)
+  m.Equation(z.dt()==-y + (u ** 2) * 0.5 + u)
+  m.Obj(z*final)
+  m.options.IMODE = 6
+  m.solve(disp=False)
+#+end_src
+
+В данной задаче мы знаем аналитическое решение:
+\[u(t) = e^{2-t}, \quad y(t) = 2 + \frac{e^2}{2} \left( e^t - e^{-t} \right) \]
+
+Нарисуем решение, сравнив с аналитическим:
+#+begin_src python :tangle "python/oc.py"
+  def u_a(t):
+      return [np.exp(-elem + 2) - 2 for elem in t]
+  
+  def y_a(t):
+      return [2 + 0.5 * np.exp(2) * (np.exp(elem) - np.exp(-elem)) for elem in t]
+
+  plt.figure(figsize=(12, 10))
+  plt.subplot(2, 1, 1)
+  plt.plot(m.time, y.value, 'k-', label=r'$y$')
+  plt.plot(m.time, y_a(m.time), 'r--', label=r'$y^*$')
+  plt.legend(loc='best')
+  plt.ylabel('Value')
+  plt.subplot(2, 1, 2)
+  plt.plot(m.time[1:], u.value[1:], 'k-', label=r'$u$')
+  plt.plot(m.time[1:], u_a(m.time)[1:], 'r--', label=r'$u^*$')
+  plt.legend(loc='best')
+  plt.ylabel('Value')
+  plt.xlabel('Time')
+  plt.savefig("./img/oc-2.png")
+  plt.clf()
+#+end_src
+
+Получили следующее решение:
+
+[[./img/oc-2.png]]
+
+** Задача 3
+
+Численно решить задачу оптимального управления:
+\[ \int_0^2 -y + \frac{1}{2} u^2 + u  dt \]
+\[ y' = y + u, \, y(0) = 2, \, u \in [e-2, +\infty) \]
+
+*** Решение
+
+Аналогично предыдущей задаче, изменилось только множество допустимых значений управления:
+#+begin_src python :tangle "python/oc.py"
+  # Задача 3
+  m = GEKKO(remote = False)
+  nt = 301
+  m.time = np.linspace(0,2,nt)
+
+  y = m.Var(value=2)
+  z = m.Var(value=0)
+  u = m.Var(value=np.e-2, lb=np.e-2)
+  p = np.zeros(nt)
+  p[-1] = 1.0
+  final = m.Param(value=p)
+
+  m.Equation(y.dt()==y + u)
+  m.Equation(z.dt()==-y + (u ** 2) * 0.5 + u)
+  m.Obj(z*final)
+  m.options.IMODE = 6
+  m.solve(disp=False)
+#+end_src
+
+Знаем аналитическое решение. При \(t \in [0,1]\):
+\[u(t) = e^{2-t} - 2, \quad y(t) = 2 + \frac{e^2}{2} \left( e^t - e^{-t} \right) \]
+
+При \(t \in (1, 2]\):
+\[u(t) = e - 2, y(t) = 1 + \frac{e^2 - 1}{2} e^t - e + 2 \right)\]
+\[\]
+Нарисуем и сравним с аналитическим решением:
+#+begin_src python :tangle "python/oc.py"
+  def u_a(t):
+      return [np.exp(-elem + 2) - 2 if elem <= 1
+              else np.e - 2
+              for elem in t]
+
+  def y_a(t):
+      return [2 + 0.5 * np.exp(2) * (np.exp(elem) - np.exp(-elem)) if elem <= 1
+              else (1 + 0.5 * (np.e ** 2 - 1)) * np.exp(elem) - np.e + 2
+              for elem in t]
+
+  plt.figure(figsize=(12, 10))
+  plt.subplot(2, 1, 1)
+  plt.plot(m.time, y.value, 'k-', label=r'$y$')
+  plt.plot(m.time, y_a(m.time), 'r--', label=r'$y^*$')
+  plt.legend(loc='best')
+  plt.ylabel('Value')
+  plt.subplot(2, 1, 2)
+  plt.plot(m.time[1:], u.value[1:], 'k-', label=r'$u$')
+  plt.plot(m.time[1:], u_a(m.time)[1:], 'r--', label=r'$u^*$')
+  plt.legend(loc='best')
+  plt.ylabel('Value')
+  plt.xlabel('Time')
+  plt.savefig("./img/oc-3.png")
+#+end_src
+
+Получили следующее решение:
+
+[[./img/oc-3.png]]
+
+** Задача 4 (*)
+
+*** Решение
+
+#+begin_src python :tangle "python/oc.py"
+  # Задача 4
+
+  # необходимый оптимизатор IPOPT доступен только в gekko под Winsows
+  # для Linux/Max необходима опция remote=True
+  isLinux = os.name == 'posix'
+
+  m = GEKKO(remote=isLinux)
+  nt = 101
+  tm = np.linspace(0, 1, nt)
+  m.time = tm
+
+  y1 = m.Var(value=np.pi / 2.0)
+  y2 = m.Var(value=4.0)
+  y3 = m.Var(value=0.0)
+
+  p = np.zeros(nt)
+  p[-1] = 1.0
+  final = m.Param(value=p)
+
+  # FV = fixed value, то есть одинаковое для любтого момента времени
+  T = m.FV(value=1.0, lb=0.1, ub=100.0)
+  # STATUS = 1 => участвует в оптимизации
+  T.STATUS = 1
+
+  # тоже самое, что u = m.Var(...)
+  u = m.MV(value=0, lb=-2, ub=2)
+  u.STATUS = 1
+
+  m.Equation(y1.dt() == u * T)
+  m.Equation(y2.dt() == m.cos(y1) * T)
+  m.Equation(y3.dt() == m.sin(y1) * T)
+
+  m.Equation(y2 * final <= 0)
+  m.Equation(y3 * final <= 0)
+
+  m.Obj(T)
+
+  m.options.IMODE = 6
+  m.solve(disp=False)
+
+  print('Найденное T: ' + str(T.value[0]))
+
+  tm = tm * T.value[0]
+
+  plt.figure(1)
+  plt.plot(tm[1:], y1.value[1:], 'k-', linewidth=2, label=r'$y_1$')
+  plt.plot(tm[1:], y2.value[1:], 'b-', linewidth=2, label=r'$y_2$')
+  plt.plot(tm[1:], y3.value[1:], 'g--', linewidth=2, label=r'$y_3$')
+  plt.plot(tm[1:], u.value[1:], 'r--', linewidth=2, label=r'$u$')
+  plt.legend(loc='best')
+  plt.xlabel('Time')
+  plt.ylabel('Value')
+  plt.savefig("./img/oc-4.png")
+#+end_src
+
+Полученное решение:
+
+[[./img/oc-4.png]]
+
+\[T = 4.2969916743\]

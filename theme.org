@@ -1,0 +1,2 @@
+#+infojs_opt: view:info toc:t ltoc:t buttons:nil
+#+html_head: <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yegor256/tacit@gh-pages/tacit-css-1.8.1.min.css" type="text/css">

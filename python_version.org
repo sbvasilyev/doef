@@ -420,6 +420,33 @@ x = y = z = 5
 
 *** Кортежи
 
+Кортеж (tuple) состоит из некоторого числа значений, отделенных запятой:
+#+begin_src python :tangle "python/intro.py"
+  request_result = ("Ok", 200, "{\"message\": \"hello\"}")
+#+end_src
+
+Элементы кортежа можно получать с помощью индекса, но более удобный способ это с помощью tuple destructuring (такой pattern matching на минималках), опуская неиспользуемые элементы с помощью специального идентификатора ~_~. Например:
+#+begin_src python :tangle "python/intro.py"
+  print(request_result[1])  # => 200
+
+  # destructuring
+  status, code, _ = request_result
+  print(f"{code} {status}") # => 200 Ok
+#+end_src
+
+Традиционное использование кортежей - это возврат нескольких значений из функции, например:
+#+begin_src python :tangle "python/intro.py"
+  def summary(xs):
+      # (!) ,будет отсортирован исходный список
+      xs.sort()
+      return xs[0], xs[-1], sum(xs) / len(xs)
+
+  some_list = [5, 3, 2, 4, 1]
+  min_val, max_val, avg_val = summary(some_list)
+  print(f"min: {min_val}, max: {max_val}, avg: {avg_val}")
+  # => min: 1, max: 5, avg: 3.0
+#+end_src
+
 *** Множества и словари
 
 Множество (set) это коллекция, которая не может содержать дубликаты:
@@ -867,7 +894,6 @@ x = y = z = 5
 \[ y_1' = u, \, y_2' = \cos y_1, \, y_3' = \sin y_1 \]
 \[y_1(0) = \pi/2, \, y_2(0) = 4, \, y_3(0) = 0\]
 \[ y_2(T) = 0, \, y_3(T) = 0, \, u \in [-2, 2] \]
-
 
 *** Решение
 

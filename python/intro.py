@@ -173,6 +173,24 @@ print(squared_numbers)  # => [1, 4, 9, 16, 25, 36]
 squared_even_numbers = [x ** 2 for x in numbers if x % 2 == 0]
 print(squared_even_numbers)  # => [4, 16, 36]
 
+request_result = ("Ok", 200, "{\"message\": \"hello\"}")
+
+print(request_result[1])  # => 200
+
+# destructuring
+status, code, _ = request_result
+print(f"{code} {status}") # => 200 Ok
+
+def summary(xs):
+    # (!) ,будет отсортирован исходный список
+    xs.sort()
+    return xs[0], xs[-1], sum(xs) / len(xs)
+
+some_list = [5, 3, 2, 4, 1]
+min_val, max_val, avg_val = summary(some_list)
+print(f"min: {min_val}, max: {max_val}, avg: {avg_val}")
+# => min: 1, max: 5, avg: 3.0
+
 drinks = {"beer", "cola", "limonade"}
 drinks.add("beer")
 drinks.add("juice")
